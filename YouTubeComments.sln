@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28606.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubeComments", "YouTubeComments\YouTubeComments.csproj", "{DB4AFEF8-08B0-469A-9780-BD731419EEBC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB4AFEF8-08B0-469A-9780-BD731419EEBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB4AFEF8-08B0-469A-9780-BD731419EEBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB4AFEF8-08B0-469A-9780-BD731419EEBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB4AFEF8-08B0-469A-9780-BD731419EEBC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B64B108E-71CF-4962-9277-395A9A5729ED}
+	EndGlobalSection
+EndGlobal
