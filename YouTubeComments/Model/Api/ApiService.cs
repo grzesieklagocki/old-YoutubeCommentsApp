@@ -53,7 +53,7 @@ namespace YouTubeComments.Model.Api
             List<Snippet> comments = new List<Snippet>(response.items.Select(i => i.snippet));
 
             string token = response.nextPageToken;
-            int doneTopLevels = response.pageInfo.totalResults;
+            int doneTopLevels = response.items.Count;
             int doneReplies = GetRepliesCount(response);
             progressChanged?.Invoke(doneTopLevels, doneReplies);
 
@@ -67,7 +67,7 @@ namespace YouTubeComments.Model.Api
 
                 if (progressChanged != null)
                 {
-                    doneTopLevels += response.pageInfo.totalResults;
+                    doneTopLevels += response.items.Count;
                     doneReplies += GetRepliesCount(response);
 
                     progressChanged.Invoke(doneTopLevels, doneReplies);
@@ -110,17 +110,17 @@ namespace YouTubeComments.Model.Api
             return ApiRequest<CommentListResponse>("comments", parameters, commentsParameters);
         }
 
-        public List<CommentReply> GetAllCommentReplies(string videoId, string commentId)
+        public List<Comment> GetAllCommentReplies(string videoId, string commentId)
         {
             CommentListResponse response = GetCommentReplies(videoId, commentId);
-            List<CommentReply> replies = new List<CommentReply>(response.items);
+            List<Comment> replies = new List<Comment>(response.items.Select(i => i.snippet));
 
             string token = response.nextPageToken;
 
             while (!string.IsNullOrWhiteSpace(token))
             {
                 response = GetCommentReplies(videoId, commentId, token);
-                replies.AddRange(response.items);
+                replies.AddRange(response.items.Select(i => i.snippet));
                 token = response.nextPageToken;
 
                 Thread.Sleep(RequestDelay);

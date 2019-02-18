@@ -3,15 +3,8 @@ using System.Collections.Generic;
 
 namespace YouTubeComments.Model.Api
 {
-    public class PageInfo
-    {
-        public int totalResults;
-        public int resultsPerPage;
-    }
-
     public class Comment
     {
-        public string id;
         public string authorDisplayName;
         public string authorProfileImageUrl;
         public string authorChannelUrl;
@@ -22,6 +15,7 @@ namespace YouTubeComments.Model.Api
 
     public class TopLevelComment
     {
+        public string id;
         public Comment snippet;
     }
 
@@ -39,7 +33,6 @@ namespace YouTubeComments.Model.Api
     public class CommentThreadListResponse
     {
         public string nextPageToken;
-        public PageInfo pageInfo;
         public List<Item> items;
     }
 }

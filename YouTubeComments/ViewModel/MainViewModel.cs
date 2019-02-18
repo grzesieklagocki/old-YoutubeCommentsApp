@@ -29,6 +29,8 @@ namespace YouTubeComments.ViewModel
     {
         public string Response { get; private set; }
 
+        public string VideoID { get; private set; } = "LiQcVSPkT6M";
+
         private readonly string key = "AIzaSyAqJ9rdOYJEkqcKsZRg5ANYBY3m2vDZCgg";
         private readonly ApiService api;
 
@@ -50,11 +52,23 @@ namespace YouTubeComments.ViewModel
 
             api = new ApiService(key);
 
-            var comments = api.GetAllComments("LiQcVSPkT6M", (a, b) => System.Diagnostics.Debug.WriteLine($"wszystkich: {a}, odpowiedzi: {b}"));
+            var comments = api.GetAllComments(VideoID, (a, b) => System.Diagnostics.Debug.WriteLine($"wszystkich: {a}, odpowiedzi: {b}"));
 
-            foreach(var comment in comments)
+            foreach (var comment in comments)
             {
                 Response += ">> " + comment.topLevelComment.snippet.textDisplay + Environment.NewLine;
+            }
+
+            var first = comments.First(c => c.totalReplyCount > 2);
+
+            string commentWithRepliesId = first.topLevelComment.id;
+            //string commentWithRepliesId = "UgipDzYkt3T003gCoAEC";
+
+            var replies = api.GetAllCommentReplies(VideoID, commentWithRepliesId);
+
+            foreach (var reply in replies)
+            {
+                Response += ">>> " + reply.textDisplay + Environment.NewLine;
             }
         }
     }
