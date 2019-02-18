@@ -20,6 +20,7 @@ namespace YouTubeComments
 
     public class CommentListResponse
     {
+        public string nextPageToken;
         public PageInfo pageInfo;
         public List<CommentReply> items;
     }
