@@ -50,7 +50,12 @@ namespace YouTubeComments.ViewModel
 
             api = new ApiService(key);
 
-            api.GetAllComments("LiQcVSPkT6M");
+            var comments = api.GetAllComments("LiQcVSPkT6M", (a, b) => System.Diagnostics.Debug.WriteLine($"wszystkich: {a}, odpowiedzi: {b}"));
+
+            foreach(var comment in comments)
+            {
+                Response += ">> " + comment.topLevelComment.snippet.textDisplay + Environment.NewLine;
+            }
         }
     }
 }

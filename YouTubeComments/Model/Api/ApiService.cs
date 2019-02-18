@@ -6,12 +6,15 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace YouTubeComments.Model.Api
 {
     public class ApiService
     {
+        public int RequestDelay { get; set; }
+
         private readonly string ytApiUrl = "https://www.googleapis.com/youtube/v3";
         private readonly string key;
 
@@ -24,9 +27,10 @@ namespace YouTubeComments.Model.Api
         };
 
 
-        public ApiService(string key)
+        public ApiService(string key, int requestDelay = 50)
         {
             this.key = key;
+            RequestDelay = requestDelay;
         }
 
 
@@ -45,58 +49,31 @@ namespace YouTubeComments.Model.Api
 
         public List<Snippet> GetAllComments(string videoId, Action<int, int> progressChanged = null)
         {
-            //List<Comment> comments = new List<Comment>();
-            //var parameters = new Dictionary<string, string>
-            //{
-            //    { "videoId", videoId },
-            //    { "order", "time" },
-            //    { "part", "snippet" },
-            //    { "textFormat", "plainText" },
-            //    { "maxResults", "100" }
-            //};
-
-            //CommentThreadListResponse commentsThreads = ApiRequest<CommentThreadListResponse>("commentThreads", parameters);
-            //comments.AddRange(commentsThreads.items.Select(i => i.snippet.topLevelComment.snippet));
-
-            //string token = commentsThreads.nextPageToken;
-
-            //var tokenDictionary = new Dictionary<string, string>
-            //{
-            //    { "pageToken", $"{token}" }
-            //};
-
-            //while (!string.IsNullOrWhiteSpace(token))
-            //{
-            //    commentsThreads = ApiRequest<CommentThreadListResponse>("commentThreads", parameters, tokenDictionary);
-            //    comments.AddRange(commentsThreads.items.Select(i => i.snippet.topLevelComment.snippet));
-            //    tokenDictionary["pageToken"] = token = commentsThreads.nextPageToken;
-            //    System.Diagnostics.Debug.WriteLine(token);
-            //}
-
-            //return comments;
-
-
             CommentThreadListResponse response = GetComments(videoId);
             List<Snippet> comments = new List<Snippet>(response.items.Select(i => i.snippet));
 
             string token = response.nextPageToken;
             int doneTopLevels = response.pageInfo.totalResults;
             int doneReplies = GetRepliesCount(response);
+            progressChanged?.Invoke(doneTopLevels, doneReplies);
+
+            Thread.Sleep(RequestDelay);
 
             while (!string.IsNullOrWhiteSpace(token))
             {
                 response = GetComments(videoId, token);
-                token = response.nextPageToken;
                 comments.AddRange(response.items.Select(i => i.snippet));
+                token = response.nextPageToken;
 
                 if (progressChanged != null)
                 {
-                    doneTopLevels += 100;
-
+                    doneTopLevels += response.pageInfo.totalResults;
                     doneReplies += GetRepliesCount(response);
 
                     progressChanged.Invoke(doneTopLevels, doneReplies);
                 }
+
+                Thread.Sleep(RequestDelay);
             }
 
             return comments;
@@ -115,6 +92,41 @@ namespace YouTubeComments.Model.Api
             }
 
             return ApiRequest<CommentThreadListResponse>("commentThreads", parameters, commentsParameters);
+        }
+
+        public CommentListResponse GetCommentReplies(string videoId, string commentId, string nextPageToken = null)
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                { "videoId", videoId },
+                { "parentId", commentId }
+            };
+
+            if (nextPageToken != null)
+            {
+                parameters.Add("pageToken", nextPageToken);
+            }
+
+            return ApiRequest<CommentListResponse>("comments", parameters, commentsParameters);
+        }
+
+        public List<CommentReply> GetAllCommentReplies(string videoId, string commentId)
+        {
+            CommentListResponse response = GetCommentReplies(videoId, commentId);
+            List<CommentReply> replies = new List<CommentReply>(response.items);
+
+            string token = response.nextPageToken;
+
+            while (!string.IsNullOrWhiteSpace(token))
+            {
+                response = GetCommentReplies(videoId, commentId, token);
+                replies.AddRange(response.items);
+                token = response.nextPageToken;
+
+                Thread.Sleep(RequestDelay);
+            }
+
+            return replies;
         }
 
         #region Helpers
