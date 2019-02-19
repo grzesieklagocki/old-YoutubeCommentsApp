@@ -22,7 +22,7 @@ namespace YouTubeComments.Model.Api
         public Thumbnail maxres;
     }
 
-    public class Snippet
+    public class VideoSnippet
     {
         public DateTime publishedAt;
         public string channelId;
@@ -53,7 +53,7 @@ namespace YouTubeComments.Model.Api
     public class Video
     {
         public string id;
-        public Snippet snippet;
+        public VideoSnippet snippet;
         public ContentDetails contentDetails;
         public Statistics statistics;
     }

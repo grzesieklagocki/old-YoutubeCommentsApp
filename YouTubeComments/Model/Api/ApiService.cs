@@ -27,6 +27,12 @@ namespace YouTubeComments.Model.Api
         };
 
 
+        private readonly Dictionary<string, string> videosParameters = new Dictionary<string, string>
+        {
+            { "part", "statistics,snippet,contentDetails" },
+        };
+
+
         public ApiService(string key, int requestDelay = 50)
         {
             this.key = key;
@@ -127,6 +133,11 @@ namespace YouTubeComments.Model.Api
             }
 
             return replies;
+        }
+
+        public RootObject GetVideoInfo(string videoId)
+        {
+            return ApiRequest<RootObject>("videos", videosParameters, new Dictionary<string, string> {{ "id", videoId }});
         }
 
         #region Helpers

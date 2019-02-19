@@ -31,6 +31,31 @@ namespace YouTubeComments.ViewModel
 
         public string VideoID { get; private set; } = "LiQcVSPkT6M";
 
+        private string videoUrl;
+        public string VideoURL
+        {
+            get => videoUrl;
+            set
+            {
+                try
+                {
+                    string id = api.GetVideoIDFromUrl(value);
+
+                    videoUrl = value;
+                    VideoID = id;
+                    IsVideoURLValid = api.ValidateVideoId(id);
+                }
+                catch
+                {
+                    IsVideoURLValid = false;
+                }
+            }
+        }
+
+        public bool IsVideoURLValid { get; private set; }
+
+        public VideoVievModel VideoVievModel { get; private set; }
+
         private readonly string key = "AIzaSyAqJ9rdOYJEkqcKsZRg5ANYBY3m2vDZCgg";
         private readonly ApiService api;
 
@@ -52,24 +77,26 @@ namespace YouTubeComments.ViewModel
 
             api = new ApiService(key);
 
-            var comments = api.GetAllComments(VideoID, (a, b) => System.Diagnostics.Debug.WriteLine($"wszystkich: {a}, odpowiedzi: {b}"));
+            //var comments = api.GetAllComments(VideoID, (a, b) => System.Diagnostics.Debug.WriteLine($"wszystkich: {a}, odpowiedzi: {b}"));
 
-            foreach (var comment in comments)
-            {
-                Response += ">> " + comment.topLevelComment.snippet.textDisplay + Environment.NewLine;
-            }
+            //foreach (var comment in comments)
+            //{
+            //    Response += ">> " + comment.topLevelComment.snippet.textDisplay + Environment.NewLine;
+            //}
 
-            var first = comments.First(c => c.totalReplyCount > 2);
+            //var first = comments.First(c => c.totalReplyCount > 2);
 
-            string commentWithRepliesId = first.topLevelComment.id;
-            //string commentWithRepliesId = "UgipDzYkt3T003gCoAEC";
+            //string commentWithRepliesId = first.topLevelComment.id;
+            ////string commentWithRepliesId = "UgipDzYkt3T003gCoAEC";
 
-            var replies = api.GetAllCommentReplies(VideoID, commentWithRepliesId);
+            //var replies = api.GetAllCommentReplies(VideoID, commentWithRepliesId);
 
-            foreach (var reply in replies)
-            {
-                Response += ">>> " + reply.textDisplay + Environment.NewLine;
-            }
+            //foreach (var reply in replies)
+            //{
+            //    Response += ">>> " + reply.textDisplay + Environment.NewLine;
+            //}
+
+            VideoVievModel = new VideoVievModel(api.GetVideoInfo(VideoID).items[0]);
         }
     }
 }
