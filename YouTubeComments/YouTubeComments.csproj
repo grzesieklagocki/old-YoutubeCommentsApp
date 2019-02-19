@@ -82,6 +82,7 @@
     <Compile Include="Model\Api\CommentListResponse.cs" />
     <Compile Include="Model\Api\CommentThreadListResponse.cs" />
     <Compile Include="Model\Api\ApiService.cs" />
+    <Compile Include="Model\Api\VideosListResponse.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">
