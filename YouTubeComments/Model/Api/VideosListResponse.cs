@@ -33,28 +33,28 @@ namespace YouTubeComments.Model.Api
         public List<string> tags;
     }
 
-    public class ContentDetails
-    {
-        public string duration;
-        public string dimension;
-        public string definition;
-        public string caption;
-    }
+    //public class ContentDetails
+    //{
+    //    public string duration;
+    //    public string dimension;
+    //    public string definition;
+    //    public string caption;
+    //}
 
     public class Statistics
     {
-        public string viewCount;
-        public string likeCount;
-        public string dislikeCount;
-        public string favoriteCount;
-        public string commentCount;
+        public long viewCount;
+        public long likeCount;
+        public long dislikeCount;
+        public long favoriteCount;
+        public long commentCount;
     }
 
     public class Video
     {
         public string id;
         public VideoSnippet snippet;
-        public ContentDetails contentDetails;
+        //public ContentDetails contentDetails;
         public Statistics statistics;
     }
 

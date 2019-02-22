@@ -10,7 +10,7 @@ namespace YouTubeComments.Model.Api
 
     public class CommentListResponse
     {
-        public string nextPageToken;
-        public List<CommentReply> items;
+        public string NextPageToken { get; set; }
+        public List<CommentReply> Items { get; set; }
     }
 }

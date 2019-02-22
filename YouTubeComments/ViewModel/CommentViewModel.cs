@@ -32,13 +32,13 @@ namespace YouTubeComments.ViewModel
         public CommentViewModel(Comment comment, string id = null, int replyCount = 0)
         {
             ID = id;
-            Text = comment.textDisplay;
-            AuthorChannelUrl = comment.authorChannelUrl;
-            AuthorDisplayName = comment.authorDisplayName;
-            AuthorProfileImageUrl = comment.authorProfileImageUrl;
-            LikeCount = comment.likeCount;
+            Text = comment.TextDisplay;
+            AuthorChannelUrl = comment.AuthorChannelUrl;
+            AuthorDisplayName = comment.AuthorDisplayName;
+            AuthorProfileImageUrl = comment.AuthorProfileImageUrl;
+            LikeCount = comment.LikeCount;
             ReplyCount = replyCount;
-            PublishedAt = comment.publishedAt;
+            PublishedAt = comment.PublishedAt;
         }
     }
 }

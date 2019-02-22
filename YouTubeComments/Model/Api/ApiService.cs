@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace YouTubeComments.Model.Api
 {
@@ -15,21 +13,15 @@ namespace YouTubeComments.Model.Api
     {
         public int RequestDelay { get; set; }
 
+        public int QuotaUsage { get; private set; }
+
         private readonly string ytApiUrl = "https://www.googleapis.com/youtube/v3";
         private readonly string key;
-
-        private readonly Dictionary<string, string> commentsParameters = new Dictionary<string, string>
-        {
-            { "order", "time" },
-            { "part", "snippet" },
-            { "textFormat", "plainText" },
-            { "maxResults", "100" }
-        };
 
 
         private readonly Dictionary<string, string> videosParameters = new Dictionary<string, string>
         {
-            { "part", "statistics,snippet,contentDetails" },
+            { "part", "statistics,snippet" },
         };
 
 
@@ -39,27 +31,13 @@ namespace YouTubeComments.Model.Api
             RequestDelay = requestDelay;
         }
 
-
-        public string GetVideoIDFromUrl(string url)
+        public List<Snippet> GetAllComments(string videoId, CommentListParameters parameters, Action<int, int> progressChanged = null)
         {
-            return Regex.Match(url, @"v=\w*").Value.Substring(2);
-        }
+            CommentThreadListResponse response = GetComments(videoId, parameters);
+            List<Snippet> comments = new List<Snippet>(response.Items.Select(i => i.Snippet));
 
-        public bool ValidateVideoId(string id)
-        {
-            if (string.IsNullOrWhiteSpace(id) || id.Length != 11 || id.Any(c => !char.IsLetterOrDigit(c)))
-                return false;
-
-            return true;
-        }
-
-        public List<Snippet> GetAllComments(string videoId, Action<int, int> progressChanged = null)
-        {
-            CommentThreadListResponse response = GetComments(videoId);
-            List<Snippet> comments = new List<Snippet>(response.items.Select(i => i.snippet));
-
-            string token = response.nextPageToken;
-            int doneTopLevels = response.items.Count;
+            string token = response.NextPageToken;
+            int doneTopLevels = response.Items.Count;
             int doneReplies = GetRepliesCount(response);
             progressChanged?.Invoke(doneTopLevels, doneReplies);
 
@@ -67,13 +45,13 @@ namespace YouTubeComments.Model.Api
 
             while (!string.IsNullOrWhiteSpace(token))
             {
-                response = GetComments(videoId, token);
-                comments.AddRange(response.items.Select(i => i.snippet));
-                token = response.nextPageToken;
+                response = GetComments(videoId, parameters);
+                comments.AddRange(response.Items.Select(i => i.Snippet));
+                token = response.NextPageToken;
 
                 if (progressChanged != null)
                 {
-                    doneTopLevels += response.items.Count;
+                    doneTopLevels += response.Items.Count;
                     doneReplies += GetRepliesCount(response);
 
                     progressChanged.Invoke(doneTopLevels, doneReplies);
@@ -85,55 +63,52 @@ namespace YouTubeComments.Model.Api
             return comments;
         }
 
-        public CommentThreadListResponse GetComments(string videoId, string nextPageToken = null)
+        public CommentThreadListResponse GetComments(string videoId, CommentListParameters parameters)
         {
-            var parameters = new Dictionary<string, string>
+            var id = new Dictionary<string, string>
             {
                 { "videoId", videoId },
             };
 
-            if (nextPageToken != null)
-            {
-                parameters.Add("pageToken", nextPageToken);
-            }
+            QuotaUsage += parameters.QuotaCost;
 
-            return ApiRequest<CommentThreadListResponse>("commentThreads", parameters, commentsParameters);
+            return ApiRequest<CommentThreadListResponse>("commentThreads", id, parameters.ToDictionary());
         }
 
-        public CommentListResponse GetCommentReplies(string videoId, string commentId, string nextPageToken = null)
-        {
-            var parameters = new Dictionary<string, string>
-            {
-                { "videoId", videoId },
-                { "parentId", commentId }
-            };
+        //public CommentListResponse GetCommentReplies(string videoId, string commentId, string nextPageToken = null)
+        //{
+        //    var parameters = new Dictionary<string, string>
+        //    {
+        //        { "videoId", videoId },
+        //        { "parentId", commentId }
+        //    };
 
-            if (nextPageToken != null)
-            {
-                parameters.Add("pageToken", nextPageToken);
-            }
+        //    if (nextPageToken != null)
+        //    {
+        //        parameters.Add("pageToken", nextPageToken);
+        //    }
 
-            return ApiRequest<CommentListResponse>("comments", parameters, commentsParameters);
-        }
+        //    return ApiRequest<CommentListResponse>("comments", parameters, commentsParameters);
+        //}
 
-        public List<Comment> GetAllCommentReplies(string videoId, string commentId)
-        {
-            CommentListResponse response = GetCommentReplies(videoId, commentId);
-            List<Comment> replies = new List<Comment>(response.items.Select(i => i.snippet));
+        //public List<Comment> GetAllCommentReplies(string videoId, string commentId)
+        //{
+        //    CommentListResponse response = GetCommentReplies(videoId, commentId);
+        //    List<Comment> replies = new List<Comment>(response.Items.Select(i => i.snippet));
 
-            string token = response.nextPageToken;
+        //    string token = response.NextPageToken;
 
-            while (!string.IsNullOrWhiteSpace(token))
-            {
-                response = GetCommentReplies(videoId, commentId, token);
-                replies.AddRange(response.items.Select(i => i.snippet));
-                token = response.nextPageToken;
+        //    while (!string.IsNullOrWhiteSpace(token))
+        //    {
+        //        response = GetCommentReplies(videoId, commentId, token);
+        //        replies.AddRange(response.Items.Select(i => i.snippet));
+        //        token = response.NextPageToken;
 
-                Thread.Sleep(RequestDelay);
-            }
+        //        Thread.Sleep(RequestDelay);
+        //    }
 
-            return replies;
-        }
+        //    return replies;
+        //}
 
         public RootObject GetVideoInfo(string videoId)
         {
@@ -146,9 +121,9 @@ namespace YouTubeComments.Model.Api
         {
             int replyCount = 0;
 
-            foreach (Item item in response.items)
+            foreach (Item item in response.Items)
             {
-                replyCount += item.snippet.totalReplyCount;
+                replyCount += item.Snippet.TotalReplyCount;
             }
 
             return replyCount;
@@ -156,7 +131,8 @@ namespace YouTubeComments.Model.Api
 
         private T ApiRequest<T>(string path, params Dictionary<string, string>[] parameters)
         {
-            var request = WebRequest.Create(CreateURL(path, parameters)) as HttpWebRequest;
+            string url = CreateURL(path, parameters);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             string responseString;
 
             using (var response = request.GetResponse())
@@ -170,12 +146,11 @@ namespace YouTubeComments.Model.Api
                 }
             }
 
-            return JsonConvert.DeserializeObject<T>(responseString);
+            return JsonConvert.DeserializeObject<T>(responseString, new JsonSerializerSettings() { ContractResolver = new CamelCasePropertyNamesContractResolver() });
         }
 
         private string CreateURL(string path, params Dictionary<string, string>[] parameters)
         {
-
             string url = $"{ytApiUrl}/{path}?key={key}";
 
             foreach (Dictionary<string, string> dictionary in parameters)

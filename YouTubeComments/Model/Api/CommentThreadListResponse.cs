@@ -5,34 +5,34 @@ namespace YouTubeComments.Model.Api
 {
     public class Comment
     {
-        public string authorDisplayName;
-        public string authorProfileImageUrl;
-        public string authorChannelUrl;
-        public string textDisplay;
-        public int likeCount;
-        public DateTime publishedAt;
+        public string AuthorDisplayName { get; set; }
+        public string AuthorProfileImageUrl { get; set; }
+        public string AuthorChannelUrl { get; set; }
+        public string TextDisplay { get; set; }
+        public int LikeCount { get; set; }
+        public DateTime PublishedAt { get; set; }
     }
 
     public class TopLevelComment
     {
-        public string id;
-        public Comment snippet;
+        public string ID { get; set; }
+        public Comment Snippet { get; set; }
     }
 
     public class Snippet
     {
-        public TopLevelComment topLevelComment;
-        public int totalReplyCount;
+        public TopLevelComment TopLevelComment { get; set; }
+        public int TotalReplyCount { get; set; }
     }
 
     public class Item
     {
-        public Snippet snippet;
+        public Snippet Snippet { get; set; }
     }
 
     public class CommentThreadListResponse
     {
-        public string nextPageToken;
-        public List<Item> items;
+        public string NextPageToken { get; set; }
+        public List<Item> Items { get; set; }
     }
 }

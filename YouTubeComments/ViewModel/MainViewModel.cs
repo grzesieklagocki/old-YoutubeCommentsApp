@@ -1,12 +1,16 @@
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 using Newtonsoft.Json;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using YouTubeComments.Model.Api;
 
@@ -29,7 +33,7 @@ namespace YouTubeComments.ViewModel
     {
         public string Response { get; private set; }
 
-        public string VideoID { get; private set; } = "LiQcVSPkT6M";
+        public string VideoID { get; private set; } = "EyWKea6IyuA";
 
         private string videoUrl;
         public string VideoURL
@@ -39,11 +43,11 @@ namespace YouTubeComments.ViewModel
             {
                 try
                 {
-                    string id = api.GetVideoIDFromUrl(value);
+                    string id = YouTubeHelper.GetVideoIDFromUrl(value);
 
                     videoUrl = value;
                     VideoID = id;
-                    IsVideoURLValid = api.ValidateVideoId(id);
+                    IsVideoURLValid = YouTubeHelper.ValidateVideoId(id);
                 }
                 catch
                 {
@@ -54,7 +58,11 @@ namespace YouTubeComments.ViewModel
 
         public bool IsVideoURLValid { get; private set; }
 
+        private RelayCommand openChannelPage;
+        public RelayCommand OpenChannelPage { get => openChannelPage ?? (openChannelPage = new RelayCommand(() => Process.Start(YouTubeHelper.GetChannelUrl(VideoVievModel.ChannelID)))); }
+
         public VideoVievModel VideoVievModel { get; private set; }
+        public ObservableCollection<CommentViewModel> Comments { get; private set; }
 
         private readonly string key = "AIzaSyAqJ9rdOYJEkqcKsZRg5ANYBY3m2vDZCgg";
         private readonly ApiService api;
@@ -64,18 +72,27 @@ namespace YouTubeComments.ViewModel
         /// </summary>
         public MainViewModel()
         {
-            ////if (IsInDesignMode)
-            ////{
-            ////    // Code runs in Blend --> create design time data.
-            ////}
-            ////else
-            ////{
-            ////    // Code runs "for real"
-            ////}
+            //if (IsInDesignMode)
+            //{
+            //    // Code runs in Blend --> create design time data.
+            //    var videoResponse = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText(@"/text.html"));
+            //    VideoVievModel = new VideoVievModel(videoResponse.items[0]);
+            //}
+            //else
+            //{
+            //    // Code runs "for real"
+            //    api = new ApiService(key);
+            //    VideoVievModel = new VideoVievModel(api.GetVideoInfo(VideoID).items[0]);
+            //}
+
+            api = new ApiService(key);
+            VideoVievModel = new VideoVievModel(api.GetVideoInfo(VideoID).items[0]);
+            var comments = api.GetAllComments(VideoID, new CommentListParameters() { MaxResults = 100, Parts = CommentListParameters.CommentPartsFlags.replies, Format = CommentListParameters.TextFormat.plainText });
+            Comments = new ObservableCollection<CommentViewModel>(comments.Select(c => new CommentViewModel(c.TopLevelComment.Snippet, c.TopLevelComment.ID, c.TotalReplyCount)));
 
             //var request = WebRequest.Create("https://www.googleapis.com/youtube/v3/commentThreads?key=AIzaSyAqJ9rdOYJEkqcKsZRg5ANYBY3m2vDZCgg&textFormat=plainText&order=time&part=snippet&videoId=MK6TXMsvgQg&maxResults=100");
 
-            api = new ApiService(key);
+            //api = new ApiService(key);
 
             //var comments = api.GetAllComments(VideoID, (a, b) => System.Diagnostics.Debug.WriteLine($"wszystkich: {a}, odpowiedzi: {b}"));
 
@@ -96,7 +113,7 @@ namespace YouTubeComments.ViewModel
             //    Response += ">>> " + reply.textDisplay + Environment.NewLine;
             //}
 
-            VideoVievModel = new VideoVievModel(api.GetVideoInfo(VideoID).items[0]);
+            //VideoVievModel = new VideoVievModel(api.GetVideoInfo(VideoID).items[0]);
         }
     }
 }

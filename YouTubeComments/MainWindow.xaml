@@ -15,7 +15,7 @@
     <DockPanel>
         <Grid Margin="5" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBox
@@ -38,6 +38,7 @@
             <StatusBarItem Content="{Binding IsVideoURLValid, Mode=OneWay}" />
         </StatusBar>
         <StackPanel
+            MaxWidth="330"
             Margin="5"
             VerticalAlignment="Stretch"
             DockPanel.Dock="Left">
@@ -51,18 +52,25 @@
                 FontSize="20"
                 Text="{Binding VideoVievModel.Title, Mode=OneWay}"
                 TextWrapping="WrapWithOverflow" />
+            <Button
+                Margin="3"
+                HorizontalAlignment="Center"
+                Command="{Binding OpenChannelPage}"
+                Content="{Binding VideoVievModel.ChannelTitle, Mode=OneWay}" />
+            <Button HorizontalAlignment="Center" Height="40" Padding="0" Margin="0" BorderThickness="0" Style="{StaticResource MetroCircleButtonStyle}">
+                <Button.Background>
+                    <ImageBrush ImageSource="{Binding Comments[0].AuthorProfileImageUrl}" Stretch="Uniform" />
+                </Button.Background>
+                <TextBlock Text="{Binding Comments[0].AuthorChannelUrl}" />
+            </Button>
             <TextBlock
                 Margin="3"
                 HorizontalAlignment="Center"
-                Text="{Binding VideoVievModel.ChannelTitle, Mode=OneWay}" />
-            <TextBlock
-                Margin="3"
-                HorizontalAlignment="Center"
-                Text="{Binding VideoVievModel.ViewCount, Mode=OneWay}" />
+                Text="{Binding VideoVievModel.ViewCount, StringFormat={}{0} wyświetleń, Mode=OneWay}" />
             <ProgressBar
                 Width="150"
                 Margin="10"
-                Maximum="{Binding VideoVievModel.RatingCount, Mode=OneWay}"
+                Maximum="{Binding VideoVievModel, Mode=OneWay}"
                 Minimum="0"
                 Value="{Binding VideoVievModel.LikeCount, Mode=OneWay}" />
 
@@ -77,6 +85,67 @@
                 <TextBlock Margin="2" Text="{Binding VideoVievModel.DislikeCount, Mode=OneWay}" />
             </StackPanel>
         </StackPanel>
-        <Grid />
+        <DockPanel Margin="5">
+            <Button Margin="5" DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconFontAwesome Margin="3,0" Kind="CommentAltRegular" />
+                    <TextBlock Margin="3,0" Text="{Binding VideoVievModel.CommentCount}" />
+                </StackPanel>
+            </Button>
+            <ScrollViewer>
+                <ItemsControl Margin="5" ItemsSource="{Binding Comments}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Image
+                                    Grid.RowSpan="3"
+                                    Margin="5,2"
+                                    VerticalAlignment="Top"
+                                    Source="{Binding AuthorProfileImageUrl}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Margin="5,0"
+                                    FontWeight="Bold"
+                                    Text="{Binding AuthorDisplayName}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Margin="5,0"
+                                    Opacity="0.6"
+                                    Text="{Binding PublishedAt}" />
+                                <TextBox
+                                    Grid.Row="1" IsReadOnly="True"
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="2"
+                                    Margin="5,0"
+                                    HorizontalAlignment="Left"
+                                    Text="{Binding Text, Mode=OneWay}" BorderThickness="0" Padding="-6,0"
+                                    TextWrapping="WrapWithOverflow" />
+                                <StackPanel Opacity="0.7"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Margin="5,10"
+                                    Orientation="Horizontal">
+                                    <iconPacks:PackIconFontAwesome Margin="5,0" Kind="ThumbsUpSolid" />
+                                    <TextBlock Margin="0,0" Text="{Binding LikeCount}" />
+                                    <iconPacks:PackIconFontAwesome Margin="10,0" Kind="CommentSolid" />
+                                    <TextBlock Margin="-5,0" Text="{Binding ReplyCount}" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+        </DockPanel>
     </DockPanel>
 </Controls:MetroWindow>

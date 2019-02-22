@@ -88,10 +88,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Api\CommentListFilters.cs" />
     <Compile Include="Model\Api\CommentListResponse.cs" />
     <Compile Include="Model\Api\CommentThreadListResponse.cs" />
     <Compile Include="Model\Api\ApiService.cs" />
     <Compile Include="Model\Api\VideosListResponse.cs" />
+    <None Include="Model\DesignDataJSON\VideosResponseJsonString.json" />
+    <Compile Include="Model\Api\YouTubeHelper.cs" />
     <Compile Include="ViewModel\CommentViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\VideoVievModel.cs" />
