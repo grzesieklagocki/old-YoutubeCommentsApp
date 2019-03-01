@@ -1,12 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Windows;
+using System.Windows.Data;
 
 namespace YouTubeComments.ValueConverters
 {
-    class BoolToVisibilityConverter
+    public class BoolToVisibilityConverter : BoolConverter<Visibility>
     {
+        public BoolToVisibilityConverter()
+        {
+            True = Visibility.Visible;
+            False = Visibility.Collapsed;
+        }
     }
 }

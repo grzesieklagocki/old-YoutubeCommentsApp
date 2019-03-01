@@ -1,6 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using PropertyChanged;
-using YouTubeComments.Model.Api;
+using YouTube;
 
 namespace YouTubeComments.ViewModel
 {
@@ -20,14 +20,14 @@ namespace YouTubeComments.ViewModel
 
         public VideoVievModel(Video video)
         {
-            Title = video.snippet.title;
-            ChannelTitle = video.snippet.channelTitle;
-            ChannelID = video.snippet.channelId;
-            ViewCount = video.statistics.viewCount;
-            LikeCount = video.statistics.likeCount;
-            DislikeCount = video.statistics.dislikeCount;
-            ThumbnailUrl = video.snippet.thumbnails.medium.url;
-            CommentCount = video.statistics.commentCount;
+            Title = video.Snippet.Title;
+            ChannelTitle = video.Snippet.ChannelTitle;
+            ChannelID = video.Snippet.ChannelId;
+            ViewCount = video.Statistics.ViewCount;
+            LikeCount = video.Statistics.LikeCount;
+            DislikeCount = video.Statistics.DislikeCount;
+            ThumbnailUrl = video.Snippet.Thumbnails.Medium.Url;
+            CommentCount = video.Statistics.CommentCount;
         }
     }
 }

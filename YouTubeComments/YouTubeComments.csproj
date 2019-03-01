@@ -88,13 +88,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Api\CommentListFilters.cs" />
-    <Compile Include="Model\Api\CommentListResponse.cs" />
-    <Compile Include="Model\Api\CommentThreadListResponse.cs" />
-    <Compile Include="Model\Api\ApiService.cs" />
-    <Compile Include="Model\Api\VideosListResponse.cs" />
     <None Include="Model\DesignDataJSON\VideosResponseJsonString.json" />
-    <Compile Include="Model\Api\YouTubeHelper.cs" />
+    <Compile Include="ValueConverters\BoolConverter.cs" />
+    <Compile Include="ValueConverters\BoolToVisibilityConverter.cs" />
+    <Compile Include="ValueConverters\NullToVisibilityConverter.cs" />
     <Compile Include="ViewModel\CommentViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\VideoVievModel.cs" />
@@ -139,7 +136,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\YouTubeApiClient\YouTubeApiClient\YouTubeApiClient.csproj">
+      <Project>{8d946094-8e22-48d2-be4d-d1b0d1cf542b}</Project>
+      <Name>YouTubeApiClient</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

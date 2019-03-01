@@ -12,7 +12,7 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using YouTubeComments.Model.Api;
+using YouTube;
 
 namespace YouTubeComments.ViewModel
 {
@@ -65,7 +65,7 @@ namespace YouTubeComments.ViewModel
         public ObservableCollection<CommentViewModel> Comments { get; private set; }
 
         private readonly string key = "AIzaSyAqJ9rdOYJEkqcKsZRg5ANYBY3m2vDZCgg";
-        private readonly ApiService api;
+        private readonly YouTube.ApiClient api;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -85,11 +85,10 @@ namespace YouTubeComments.ViewModel
             //    VideoVievModel = new VideoVievModel(api.GetVideoInfo(VideoID).items[0]);
             //}
 
-            api = new ApiService(key);
-            VideoVievModel = new VideoVievModel(api.GetVideoInfo(VideoID).items[0]);
-            var comments = api.GetAllComments(VideoID, new CommentListParameters() { MaxResults = 100, Parts = CommentListParameters.CommentPartsFlags.replies, Format = CommentListParameters.TextFormat.plainText });
-            Comments = new ObservableCollection<CommentViewModel>(comments.Select(c => new CommentViewModel(c.TopLevelComment.Snippet, c.TopLevelComment.ID, c.TotalReplyCount)));
-
+            //api = new ApiClient(key);
+            //VideoVievModel = new VideoVievModel(api.GetVideosById(VideoID).Items[0]);
+            //var comments = api.GetAllComments(VideoID, new CommentThreadsParameters() { MaxResults = 100, Parts = CommentThreadsParameters.CommentPartsFlags.snippet, Format = CommentThreadsParameters.TextFormat.plainText });
+            //api.get
             //var request = WebRequest.Create("https://www.googleapis.com/youtube/v3/commentThreads?key=AIzaSyAqJ9rdOYJEkqcKsZRg5ANYBY3m2vDZCgg&textFormat=plainText&order=time&part=snippet&videoId=MK6TXMsvgQg&maxResults=100");
 
             //api = new ApiService(key);

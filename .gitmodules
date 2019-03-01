@@ -1,0 +1,3 @@
+[submodule "YouTubeApiClient"]
+	path = YouTubeApiClient
+	url = https://grzesieklagocki@bitbucket.org/grzesieklagocki/youtubeapiclient.git

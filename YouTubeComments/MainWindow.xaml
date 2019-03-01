@@ -41,6 +41,7 @@
             MaxWidth="330"
             Margin="5"
             VerticalAlignment="Stretch"
+            Visibility="{Binding VideoVievModel, Converter={StaticResource NullToVisConv}, UpdateSourceTrigger=PropertyChanged}"
             DockPanel.Dock="Left">
             <Image
                 Width="320"
@@ -70,9 +71,9 @@
             <ProgressBar
                 Width="150"
                 Margin="10"
-                Maximum="{Binding VideoVievModel, Mode=OneWay}"
                 Minimum="0"
-                Value="{Binding VideoVievModel.LikeCount, Mode=OneWay}" />
+                Maximum="100"
+                Value="{Binding VideoVievModel.LikePercent, Mode=OneWay}" />
 
             <StackPanel
                 Margin="0,-3,0,0"
